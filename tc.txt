@@ -1,0 +1,463 @@
+
+/* 1. Best Fit Memory Allocation (Turbo C Compatible) */
+#include <stdio.h>
+#include <conio.h>
+
+void bestFit(int blockSize[], int blocks, int processSize[], int processes) {
+    int allocation[10], i, j, bestIdx;
+    for (i = 0; i < processes; i++) allocation[i] = -1;
+
+    for (i = 0; i < processes; i++) {
+        bestIdx = -1;
+        for (j = 0; j < blocks; j++) {
+            if (blockSize[j] >= processSize[i]) {
+                if (bestIdx == -1 || blockSize[j] < blockSize[bestIdx]) bestIdx = j;
+            }
+        }
+        if (bestIdx != -1) {
+            allocation[i] = bestIdx;
+            blockSize[bestIdx] -= processSize[i];
+        }
+    }
+
+    printf("Process No.\tProcess Size\tBlock No.\n");
+    for (i = 0; i < processes; i++) {
+        printf("%d\t\t%d\t\t", i + 1, processSize[i]);
+        if (allocation[i] != -1) printf("%d\n", allocation[i] + 1);
+        else printf("Not Allocated\n");
+    }
+}
+
+int main() {
+    int blockSize[5] = {100, 500, 200, 300, 600};
+    int processSize[4] = {212, 417, 112, 426};
+    int blocks = 5, processes = 4;
+    clrscr();
+    bestFit(blockSize, blocks, processSize, processes);
+    getch();
+    return 0;
+}
+
+/* 2. Paging Concept */
+#include <stdio.h>
+#include <conio.h>
+#define PAGE_SIZE 4
+
+int main() {
+    int logical_address, page_number, offset;
+    clrscr();
+    printf("Enter Logical Address: ");
+    scanf("%d", &logical_address);
+
+    page_number = logical_address / PAGE_SIZE;
+    offset = logical_address % PAGE_SIZE;
+
+    printf("Page Number: %d, Offset: %d\n", page_number, offset);
+    getch();
+    return 0;
+}
+
+/* 3. FIFO Page Replacement */
+#include <stdio.h>
+#include <conio.h>
+
+int main() {
+    int frames[3] = {-1, -1, -1}, pages[7] = {1, 3, 0, 3, 5, 6, 3};
+    int page_faults = 0, next_replace = 0;
+    int i, j, found;
+    clrscr();
+
+    for (i = 0; i < 7; i++) {
+        found = 0;
+        for (j = 0; j < 3; j++)
+            if (frames[j] == pages[i]) found = 1;
+
+        if (!found) {
+            frames[next_replace] = pages[i];
+            next_replace = (next_replace + 1) % 3;
+            page_faults++;
+        }
+
+        printf("Frames: ");
+        for (j = 0; j < 3; j++) printf("%d ", frames[j]);
+        printf("\n");
+    }
+    printf("Total Page Faults: %d\n", page_faults);
+    getch();
+    return 0;
+}
+
+/* 4. Deadlock Detection (Simplified for Turbo C) */
+#include <stdio.h>
+#include <conio.h>
+
+int main() {
+    int allocation[3][3] = {{0, 1, 0}, {2, 0, 0}, {3, 0, 2}};
+    int max[3][3] = {{7, 5, 3}, {3, 2, 2}, {9, 0, 2}};
+    int available[3] = {3, 3, 2}, finish[3] = {0, 0, 0}, safeSeq[3], work[3], count = 0;
+    int i, j, k, found;
+    clrscr();
+
+    for (i = 0; i < 3; i++) work[i] = available[i];
+
+    while (count < 3) {
+        found = 0;
+        for (i = 0; i < 3; i++) {
+            if (!finish[i]) {
+                for (j = 0; j < 3; j++)
+                    if (max[i][j] - allocation[i][j] > work[j]) break;
+
+                if (j == 3) {
+                    for (k = 0; k < 3; k++) work[k] += allocation[i][k];
+                    safeSeq[count++] = i;
+                    finish[i] = 1;
+                    found = 1;
+                }
+            }
+        }
+        if (!found) {
+            printf("System is in deadlock!\n");
+            getch();
+            return 0;
+        }
+    }
+
+    printf("Safe sequence is: ");
+    for (i = 0; i < 3; i++) printf("%d ", safeSeq[i]);
+    printf("\n");
+    getch();
+    return 0;
+}
+
+===== CODE 10 =====
+Shell Scripts (Not runnable in Turbo C)
+Note: This code is written in Bash script. Use a Linux shell or WSL to run.
+
+===== CODE 11 =====
+Single-Level Directory Structure
+#include <stdio.h>
+#include <string.h>
+
+struct File {
+    char fileName[20];
+};
+
+int main() {
+    struct File files[5];
+    int fileCount = 3;
+
+    strcpy(files[0].fileName, "file1.txt");
+    strcpy(files[1].fileName, "file2.txt");
+    strcpy(files[2].fileName, "file3.txt");
+
+    printf("Single-Level Directory Structure:\n");
+    for (int i = 0; i < fileCount; i++)
+        printf("File: %s\n", files[i].fileName);
+
+    return 0;
+}
+
+===== CODE 12 =====
+Sequential File Processing for Student Information
+#include <stdio.h>
+
+struct Student {
+    int id;
+    char name[20];
+    int marks;
+};
+
+int main() {
+    struct Student s1 = {101, "Alice", 89};
+    struct Student s2 = {102, "Bob", 76};
+
+    FILE *file = fopen("students.txt", "w");
+    fprintf(file, "%d %s %d\n", s1.id, s1.name, s1.marks);
+    fprintf(file, "%d %s %d\n", s2.id, s2.name, s2.marks);
+    fclose(file);
+
+    printf("Student information stored in sequential file.\n");
+    return 0;
+}
+
+===== CODE 13 =====
+Banker's Algorithm (Deadlock Avoidance)
+#include <stdio.h>
+
+void banker(int allocation[][3], int max[][3], int available[], int n, int m) {
+    int finish[10], safeSeq[10], work[10], count = 0;
+    int i, j, k;
+
+    for (i = 0; i < m; i++) work[i] = available[i];
+    for (i = 0; i < n; i++) finish[i] = 0;
+
+    while (count < n) {
+        int found = 0;
+        for (i = 0; i < n; i++) {
+            if (!finish[i]) {
+                for (j = 0; j < m; j++)
+                    if (max[i][j] - allocation[i][j] > work[j])
+                        break;
+                if (j == m) {
+                    for (k = 0; k < m; k++) work[k] += allocation[i][k];
+                    safeSeq[count++] = i;
+                    finish[i] = 1;
+                    found = 1;
+                }
+            }
+        }
+        if (!found) {
+            printf("System is in deadlock!\n");
+            return;
+        }
+    }
+
+    printf("Safe sequence: ");
+    for (i = 0; i < n; i++) printf("%d ", safeSeq[i]);
+    printf("\n");
+}
+
+int main() {
+    int allocation[3][3] = {{0, 1, 0}, {2, 0, 0}, {3, 0, 2}};
+    int max[3][3] = {{7, 5, 3}, {3, 2, 2}, {9, 0, 2}};
+    int available[3] = {3, 3, 2};
+
+    banker(allocation, max, available, 3, 3);
+    return 0;
+}
+
+===== CODE 14 =====
+Shared Memory & Inter-Process Communication
+❌ Not compatible with Turbo C (uses Linux IPC libraries)
+
+===== CODE 15 =====
+UNIX System Calls (fork, exec, wait, etc.)
+❌ Not compatible with Turbo C (uses UNIX system calls)
+
+===== CODE 16 =====
+Segmentation Concept
+#include <stdio.h>
+
+struct Segment {
+    int base;
+    int limit;
+};
+
+int main() {
+    struct Segment segments[] = {
+        {1000, 400}, {2000, 300}, {3000, 500}
+    };
+
+    printf("Segment Table:\n");
+    printf("Segment\tBase\tLimit\n");
+    for (int i = 0; i < 3; i++)
+        printf("%d\t%d\t%d\n", i, segments[i].base, segments[i].limit);
+
+    return 0;
+}
+
+===== CODE 17 =====
+Simulating UNIX Commands (cp)
+❌ File operations fine, but limited functionality in Turbo C
+NOTE: Replace command-line arguments with manual input for Turbo C
+
+===== CODE 18 =====
+Shell Programs
+❌ Not compatible with Turbo C (bash script)
+
+===== CODE 19 =====
+Random Access File for Employee Details
+#include <stdio.h>
+
+struct Employee {
+    int id;
+    char name[20];
+    float salary;
+};
+
+int main() {
+    FILE *file = fopen("employees.dat", "wb");
+    struct Employee e1 = {101, "John", 50000}, e2 = {102, "Jane", 60000};
+
+    fwrite(&e1, sizeof(struct Employee), 1, file);
+    fwrite(&e2, sizeof(struct Employee), 1, file);
+    fclose(file);
+
+    file = fopen("employees.dat", "rb");
+    struct Employee e;
+    while (fread(&e, sizeof(struct Employee), 1, file))
+        printf("ID: %d, Name: %s, Salary: %.2f\n", e.id, e.name, e.salary);
+    fclose(file);
+    return 0;
+}
+
+===== CODE 20 =====
+LRU Page Replacement
+#include <stdio.h>
+
+int findLRU(int time[], int n) {
+    int min = time[0], pos = 0;
+    for (int i = 1; i < n; i++)
+        if (time[i] < min) {
+            min = time[i];
+            pos = i;
+        }
+    return pos;
+}
+
+int main() {
+    int frames[3], time[3], pages[] = {1, 3, 0, 3, 5, 6, 3};
+    int page_faults = 0, counter = 0;
+    int i, j;
+
+    for (i = 0; i < 3; i++) frames[i] = -1;
+
+    for (i = 0; i < 7; i++) {
+        int found = 0;
+        for (j = 0; j < 3; j++)
+            if (frames[j] == pages[i]) {
+                found = 1;
+                time[j] = counter++;
+            }
+
+        if (!found) {
+            int pos = findLRU(time, 3);
+            frames[pos] = pages[i];
+            time[pos] = counter++;
+            page_faults++;
+        }
+
+        printf("Frames: ");
+        for (j = 0; j < 3; j++) printf("%d ", frames[j]);
+        printf("\n");
+    }
+    printf("Total Page Faults: %d\n", page_faults);
+    return 0;
+}
+
+
+/* 5. Two-Level Directory (Turbo C Compatible) */
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+
+struct Directory {
+    char folderName[20];
+    char files[5][20];
+    int fileCount;
+};
+
+int main() {
+    struct Directory dir[2];
+    int i, j;
+    clrscr();
+
+    strcpy(dir[0].folderName, "Folder1");
+    strcpy(dir[1].folderName, "Folder2");
+
+    strcpy(dir[0].files[0], "fileA.txt");
+    strcpy(dir[0].files[1], "fileB.txt");
+    dir[0].fileCount = 2;
+
+    strcpy(dir[1].files[0], "fileX.txt");
+    dir[1].fileCount = 1;
+
+    printf("Two-Level Directory Structure:\n");
+    for (i = 0; i < 2; i++) {
+        printf("Folder: %s\n", dir[i].folderName);
+        for (j = 0; j < dir[i].fileCount; j++)
+            printf(" -> %s\n", dir[i].files[j]);
+    }
+
+    getch();
+    return 0;
+}
+
+/* 6. Producer-Consumer Problem - Not supported in Turbo C (uses pthread/semaphore) */
+
+/* 7. Indexed File Allocation (Turbo C Compatible) */
+#include <stdio.h>
+#include <conio.h>
+#define MAX_BLOCKS 10
+
+void indexedAllocation(int indexBlock[], int numFiles) {
+    int i, j;
+    for (i = 0; i < numFiles; i++) {
+        printf("File %d stored in blocks: ", i + 1);
+        for (j = 0; j < MAX_BLOCKS; j++) {
+            if (indexBlock[j] != -1) printf("%d ", indexBlock[j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int indexBlock[MAX_BLOCKS] = {1, 3, 5, 7, 9, -1, -1, -1, -1, -1};
+    clrscr();
+    indexedAllocation(indexBlock, 5);
+    getch();
+    return 0;
+}
+
+/* 8. FCFS CPU Scheduling */
+#include <stdio.h>
+#include <conio.h>
+
+int main() {
+    int n, bt[10], wt[10], tat[10], i;
+    clrscr();
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    printf("Enter burst times:\n");
+    for (i = 0; i < n; i++) scanf("%d", &bt[i]);
+
+    wt[0] = 0;
+    for (i = 1; i < n; i++) wt[i] = wt[i - 1] + bt[i - 1];
+    for (i = 0; i < n; i++) tat[i] = bt[i] + wt[i];
+
+    printf("Process\tBurst Time\tWait Time\tTurnaround Time\n");
+    for (i = 0; i < n; i++)
+        printf("%d\t%d\t\t%d\t\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+
+    getch();
+    return 0;
+}
+
+/* 9. SJF CPU Scheduling */
+#include <stdio.h>
+#include <conio.h>
+
+void sortProcesses(int n, int bt[]) {
+    int i, j, temp;
+    for (i = 0; i < n - 1; i++)
+        for (j = 0; j < n - i - 1; j++)
+            if (bt[j] > bt[j + 1]) {
+                temp = bt[j];
+                bt[j] = bt[j + 1];
+                bt[j + 1] = temp;
+            }
+}
+
+int main() {
+    int n, bt[10], wt[10], tat[10], i;
+    clrscr();
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    printf("Enter burst times:\n");
+    for (i = 0; i < n; i++) scanf("%d", &bt[i]);
+
+    sortProcesses(n, bt);
+
+    wt[0] = 0;
+    for (i = 1; i < n; i++) wt[i] = wt[i - 1] + bt[i - 1];
+    for (i = 0; i < n; i++) tat[i] = bt[i] + wt[i];
+
+    printf("Process\tBurst Time\tWait Time\tTurnaround Time\n");
+    for (i = 0; i < n; i++)
+        printf("%d\t%d\t\t%d\t\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+
+    getch();
+    return 0;
+}

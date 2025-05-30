@@ -1,0 +1,405 @@
+//Fifo queue Replacement 
+int pageFaults(int pages[], int n, int capacity)
+{
+    unordered_set<int> s;
+
+    
+    queue<int> indexes;
+
+    
+    int page_faults = 0;
+    for (int i=0; i<n; i++)
+    {
+        
+        if (s.size() < capacity)
+        {
+            if (s.find(pages[i])==s.end())
+            {s.insert(pages[i]);
+page_faults++;
+indexes.push(pages[i]);
+            }
+        }
+
+        else
+        {
+            if (s.find(pages[i]) == s.end())
+            {
+                int val = indexes.front();
+            indexes.pop();s.erase(val);
+s.insert(pages[i]);
+indexes.push(pages[i]); page_faults++;
+            }
+        }
+    }
+
+    return page_faults;
+}
+int main()
+{
+    int pages[] = {7, 0, 1, 2, 0, 3, 0, 4,
+                   2, 3, 0, 3, 2};
+    int n = sizeof(pages)/sizeof(pages[0]);
+    int capacity = 4;
+    cout << pageFaults(pages, n, capacity);
+    return 0;
+}
+// Two Level Directory user
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+struct User {
+    string name;
+    vector<string> files;
+};
+
+vector<User> users;
+
+User* findUser(string name) {
+    for (auto &user : users)
+        if (user.name == name) return &user;
+    return nullptr;
+}
+
+int main() {
+    int choice;
+    string uname, fname;
+
+    while (true) {
+        cout << "\n1. Create User\n2. Create File\n3. List Files\n4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "Enter username: ";
+            cin >> uname;
+            if (findUser(uname)) cout << "User exists.\n";
+            else {
+                users.push_back({uname, {}});
+                cout << "User created.\n";
+            }
+        }
+        else if (choice == 2) {
+            cout << "Enter username: ";
+            cin >> uname;
+            User* user = findUser(uname);
+            if (!user) cout << "User not found.\n";
+            else {
+                cout << "Enter filename: ";
+                cin >> fname;
+                user->files.push_back(fname);
+                cout << "File created.\n";
+            }
+        }
+        else if (choice == 3) {
+            cout << "Enter username: ";
+            cin >> uname;
+            User* user = findUser(uname);
+            if (!user) cout << "User not found.\n";
+            else {
+                cout << "Files of " << uname << ":\n";
+                for (auto &f : user->files)
+                    cout << "- " << f << "\n";
+                if (user->files.empty())
+                    cout << "No files.\n";
+            }
+        }
+        else if (choice == 4) break;
+        else cout << "Invalid choice.\n";
+    }
+
+    return 0;
+}
+//Segmentation
+#include <iostream>
+using namespace std;
+
+int main() {
+    int segments[10], base[10], limit[10], n, offset, seg;
+
+    cout << "Enter number of segments: ";
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cout << "Segment " << i << " base: "; cin >> base[i];
+        cout << "Segment " << i << " limit: "; cin >> limit[i];
+    }
+    cout << "Enter segment number and offset: ";
+    cin >> seg >> offset;
+
+    if (seg >= n || offset >= limit[seg])
+        cout << "Segmentation Fault
+";
+    else
+        cout << "Physical address: " << base[seg] + offset << endl;
+
+    return 0;
+}
+//lru
+#include <iostream>
+using namespace std;
+
+int findLRU(int time[], int n) {
+    int min = time[0], pos = 0;
+    for (int i = 1; i < n; ++i) {
+        if (time[i] < min) {
+            min = time[i];
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+int main() {
+    int n, frames;
+    cout << "Enter number of pages: ";
+    cin >> n;
+    int pages[n];
+    cout << "Enter page numbers: ";
+    for (int i = 0; i < n; i++) cin >> pages[i];
+    cout << "Enter number of frames: ";
+    cin >> frames;
+
+    int fr[frames], time[frames], count = 0, faults = 0;
+    for (int i = 0; i < frames; i++) fr[i] = -1;
+
+    for (int i = 0; i < n; i++) {
+        bool found = false;
+        for (int j = 0; j < frames; j++) {
+            if (fr[j] == pages[i]) {
+                count++;
+                time[j] = count;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            int pos = -1;
+            for (int j = 0; j < frames; j++) {
+                if (fr[j] == -1) {
+                    pos = j;
+                    break;
+                }
+            }
+            if (pos == -1)
+                pos = findLRU(time, frames);
+            fr[pos] = pages[i];
+            count++;
+            time[pos] = count;
+            faults++;
+        }
+    }
+    cout << "Total Page Faults = " << faults << endl;
+    return 0;
+}
+//FILE ACCESS EMPLOYEE
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    fstream file("emp.dat", ios::in | ios::out | ios::binary | ios::trunc);
+
+    int id;
+    char name[20];
+    float salary;
+
+    for (int i = 0; i < 2; i++) {
+        cout << "Enter ID, Name, Salary: ";
+        cin >> id >> name >> salary;
+
+        file.write((char*)&id, sizeof(id));
+        file.write(name, sizeof(name));
+        file.write((char*)&salary, sizeof(salary));
+    }
+
+    file.seekg(0);
+    for (int i = 0; i < 2; i++) {
+        file.read((char*)&id, sizeof(id));
+        file.read(name, sizeof(name));
+        file.read((char*)&salary, sizeof(salary));
+
+        cout << "ID: " << id << ", Name: " << name << ", Salary: " << salary << endl;
+    }
+
+    file.close();
+    return 0;
+}
+//unix simulation
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <filesystem>
+
+using namespace std;
+namespace fs = std::filesystem;
+
+int main() {
+    // Simulate 'ls' command: list files in current directory
+    cout << "Simulating 'ls' command:\n";
+    for (const auto& entry : fs::directory_iterator("."))
+        cout << entry.path().filename() << endl;
+
+    // Simulate 'cp' command: copy contents of a.txt to b.txt
+    cout << "\nSimulating 'cp' command:\n";
+    ifstream src("a.txt");
+    ofstream dst("b.txt");
+    dst << src.rdbuf();  // Copy entire contents from source to destination
+    cout << "Copied 'a.txt' to 'b.txt'\n";
+
+    // Simulate 'grep' command: search lines containing "main" in unix_sim.cpp
+    cout << "\nSimulating 'grep' command (search 'main'):\n";
+    ifstream file("unix_sim.cpp");
+    string line;
+    while (getline(file, line)) {
+        if (line.find("main") != string::npos)
+            cout << line << endl;
+    }
+
+    return 0;
+}
+//Deadlock
+
+include <iostream>
+using namespace std;
+
+int main() {
+    int alloc[5][5], avail[5], nProc, nRes;
+
+    cout << "Proc Res: ";
+    cin >> nProc >> nRes;
+
+    cout << "Allocations:\n";
+    for (int i = 0; i < nProc; i++)
+        for (int j = 0; j < nRes; j++)
+            cin >> alloc[i][j];
+
+    cout << "Available: ";
+    for (int j = 0; j < nRes; j++) cin >> avail[j];
+
+    bool finished[5] = {false};
+    bool done;
+
+    do {
+        done = false;
+        for (int i = 0; i < nProc; i++) {
+            if (!finished[i]) {
+                bool canFinish = true;
+                for (int j = 0; j < nRes; j++) {
+                    if (alloc[i][j] > avail[j]) {
+                        canFinish = false;
+                        break;
+                    }
+                }
+
+                if (canFinish) {
+                    for (int j = 0; j < nRes; j++)
+                        avail[j] += alloc[i][j];
+                    finished[i] = true;
+                    done = true;
+                }
+            }
+        }
+    } while (done);
+
+    for (int i = 0; i < nProc; i++) {
+        if (!finished[i])
+            cout << "Deadlock at P" << i << endl;
+    }
+
+    return 0;
+}
+//fifo 
+#include <iostream>
+using namespace std;
+
+int main() {
+    int pages[20], frames[10], nPages, nFrames, faults = 0;
+
+    cout << "Pages: ";
+    cin >> nPages;
+    for (int i = 0; i < nPages; i++) cin >> pages[i];
+
+    cout << "Frames: ";
+    cin >> nFrames;
+
+    for (int i = 0; i < nFrames; i++) frames[i] = -1;
+
+    int pos = 0;
+    for (int i = 0; i < nPages; i++) {
+        bool found = false;
+
+        for (int j = 0; j < nFrames; j++) {
+            if (frames[j] == pages[i]) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            frames[pos % nFrames] = pages[i];
+            pos++;
+            faults++;
+        }
+    }
+
+    cout << "Faults: " << faults << endl;
+    return 0;
+}
+//paging
+#include <iostream>
+using namespace std;
+
+int main() {
+    int memSize, pageSize, pageNum, offset;
+
+    cout << "MemSize PageSize: ";
+    cin >> memSize >> pageSize;
+
+    cout << "PageNo Offset: ";
+    cin >> pageNum >> offset;
+
+    int totalPages = memSize / pageSize;
+
+    if (pageNum < totalPages && offset < pageSize)
+        cout << "PhysAddr: " << (pageNum * pageSize + offset) << endl;
+    else
+        cout << "Invalid" << endl;
+
+    return 0;
+}
+//best fit
+#include <iostream>
+using namespace std;
+
+int main() {
+    int blocks[10], processes[10], nBlocks, nProcs;
+
+    cout << "Blocks: ";
+    cin >> nBlocks;
+    for (int i = 0; i < nBlocks; i++) cin >> blocks[i];
+
+    cout << "Processes: ";
+    cin >> nProcs;
+    for (int i = 0; i < nProcs; i++) cin >> processes[i];
+
+    for (int i = 0; i < nProcs; i++) {
+        int bestIdx = -1;
+        for (int j = 0; j < nBlocks; j++) {
+            if (blocks[j] >= processes[i]) {
+                if (bestIdx == -1 || blocks[j] < blocks[bestIdx])
+                    bestIdx = j;
+            }
+        }
+
+        if (bestIdx != -1) {
+            cout << "P" << i + 1 << " -> B" << bestIdx + 1 << endl;
+            blocks[bestIdx] -= processes[i];
+        } else {
+            cout << "P" << i + 1 << " Not Allocated" << endl;
+        }
+    }
+
+    return 0;
+}
+//
