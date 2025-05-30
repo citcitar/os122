@@ -450,4 +450,232 @@ int main() {
 
     return 0;
 }
-//
+//user two level
+#include <bits/stdc++.h>
+using namespace std;
+
+map<string, vector<string>> users;
+
+int main() {
+    int choice;
+    string uname, fname;
+
+    while (true) {
+        cout << "\n1. Create User\n2. Create File\n3. List Files\n4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "Enter username: ";
+            cin >> uname;
+            if (users.find(uname) != users.end())
+                cout << "User exists.\n";
+            else {
+                users[uname] = {};
+                cout << "User created.\n";
+            }
+        }
+        else if (choice == 2) {
+            cout << "Enter username: ";
+            cin >> uname;
+            if (users.find(uname) == users.end())
+                cout << "User not found.\n";
+            else {
+                cout << "Enter filename: ";
+                cin >> fname;
+                users[uname].push_back(fname);
+                cout << "File created.\n";
+            }
+        }
+        else if (choice == 3) {
+            cout << "Enter username: ";
+            cin >> uname;
+            if (users.find(uname) == users.end())
+                cout << "User not found.\n";
+            else {
+                cout << "Files of " << uname << ":\n";
+                if (users[uname].empty()) cout << "No files.\n";
+                else {
+                    for (auto &f : users[uname])
+                        cout << "- " << f << "\n";
+                }
+            }
+        }
+        else if (choice == 4) break;
+        else cout << "Invalid choice.\n";
+    }
+
+    return 0;
+}
+// one level directory
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+vector<string> directory;
+
+bool fileExists(const string& name) {
+    for (auto& fname : directory) {
+        if (fname == name) return true;
+    }
+    return false;
+}
+
+int main() {
+    int choice;
+    string fname;
+
+    while (true) {
+        cout << "\n--- Single-Level Directory ---\n";
+        cout << "1. Create File\n2. List Files\n3. Delete File\n4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter file name: ";
+                cin >> fname;
+                if (fileExists(fname))
+                    cout << "File already exists.\n";
+                else {
+                    directory.push_back(fname);
+                    cout << "File created.\n";
+                }
+                break;
+
+            case 2:
+                if (directory.empty())
+                    cout << "No files.\n";
+                else {
+                    cout << "Files in directory:\n";
+                    for (auto& fname : directory) {
+                        cout << "- " << fname << endl;
+                    }
+                }
+                break;
+
+            case 3:
+                cout << "Enter file name to delete: ";
+                cin >> fname;
+                {
+                    bool found = false;
+                    for (auto it = directory.begin(); it != directory.end(); ++it) {
+                        if (*it == fname) {
+                            directory.erase(it);
+                            cout << "File deleted.\n";
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        cout << "File not found.\n";
+                }
+                break;
+
+            case 4:
+                return 0;
+
+            default:
+                cout << "Invalid choice.\n";
+        }
+    }
+}
+//sjf
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    int id[n], bt[n], wt[n], tat[n];
+
+    for (int i = 0; i < n; i++) {
+        id[i] = i + 1;
+        cout << "Enter burst time for P" << id[i] << ": ";
+        cin >> bt[i];
+    }
+
+    wt[0] = 0;
+    for (int i = 1; i < n; i++) {
+        wt[i] = wt[i - 1] + bt[i - 1];
+    }
+
+    cout << "\nProcess\tBT\tWT\tTAT\n";
+    for (int i = 0; i < n; i++) {
+        tat[i] = wt[i] + bt[i];
+        cout << "P" << id[i] << "\t" << bt[i] << "\t" << wt[i] << "\t" << tat[i] << "\n";
+    }
+
+    return 0;
+}
+//bankers
+#include <iostream>
+using namespace std;
+const int P = 5, R = 3;
+
+int main() {
+    int alloc[P][R] = {{0, 1, 0}, {2, 0, 0}, {3, 0, 2}, {2, 1, 1}, {0, 0, 2}};
+    int max[P][R] = {{7, 5, 3}, {3, 2, 2}, {9, 0, 2}, {2, 2, 2}, {4, 3, 3}};
+    int avail[R] = {3, 3, 2}, need[P][R];
+    for (int i = 0; i < P; i++)
+        for (int j = 0; j < R; j++)
+            need[i][j] = max[i][j] - alloc[i][j];
+    bool finish[P] = {0};
+    int safeSeq[P], count = 0;
+
+    while (count < P) {
+        bool found = false;
+        for (int p = 0; p < P; p++) {
+            if (!finish[p]) {
+                bool canAllocate = true;
+                for (int r = 0; r < R; r++)
+                    if (need[p][r] > avail[r]) canAllocate = false;
+                if (canAllocate) {
+                    for (int k = 0; k < R; k++) avail[k] += alloc[p][k];
+                    safeSeq[count++] = p;
+                    finish[p] = true;
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            cout << "System is not in a safe state.
+";
+            return 1;
+        }
+    }
+    cout << "System is in a safe state. Safe sequence is:
+";
+    for (int i = 0; i < P; i++) cout << "P" << safeSeq[i] << " ";
+    cout << endl;
+    return 0;
+}
+//unix sys calls
+#include<bits/stdc++.h>
+using namespace std;
+
+int main() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        cout << "Child PID: " << getpid() << endl;
+        execl("/bin/ls", "ls", NULL);
+        exit(0);
+    } else {
+        wait(NULL);
+        cout << "Parent PID: " << getpid() << endl;
+
+        int fd = close(1);
+        struct stat st;
+        stat("unix_syscalls.cpp", &st);
+        DIR* dir = opendir(".");
+        struct dirent* entry;
+        while ((entry = readdir(dir)) != NULL) {
+            cout << entry->d_name << endl;
+        }
+        closedir(dir);
+    }
+    return 0;
+}
