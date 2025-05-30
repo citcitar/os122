@@ -461,3 +461,38 @@ int main() {
     getch();
     return 0;
 }
+////final shell programs 
+$a = Read-Host "Enter first number"
+$b = Read-Host "Enter second number"
+$op = Read-Host "Enter operation (+, -, *, /)"
+
+$result = Invoke-Expression "$a $op $b"
+Write-Output "Result: $result"
+
+///
+$number = Read-Host "Enter a number"
+
+if ($number % 2 -eq 0) {
+    Write-Output "$number is Even"
+} else {
+    Write-Output "$number is Odd"
+}
+
+//
+$number = Read-Host "Enter a number"
+$fact = 1
+
+for ($i = 1; $i -le $number; $i++) {
+    $fact *= $i
+}
+
+Write-Output "Factorial of $number is $fact"
+//
+$year = Read-Host "Enter a year"
+
+if (($year % 4 -eq 0 -and $year % 100 -ne 0) -or ($year % 400 -eq 0)) {
+    Write-Output "$year is a Leap Year"
+} else {
+    Write-Output "$year is Not a Leap Year"
+}
+//
